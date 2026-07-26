@@ -1,6 +1,7 @@
 import time
 import cv2
 import mediapipe as mp
+import numpy as np
 from pathlib import Path
 
 #====Configuracion inicial======
@@ -32,17 +33,16 @@ FaceLandmarker = mp.tasks.vision.FaceLandmarker
 FaceLandmarkerOptions = mp.tasks.vision.FaceLandmarkerOptions
 FaceLandmarkerResult = mp.tasks.vision.FaceLandmarkerResult
 
-resultados_mano = None # Variable global para almacenar los resultados de la detección de manos
-resultados_rostro = None # Variable global para almacenar los resultados de la detección de rostros
+
 
 def procesar_resultado(result, output_image, timestamp_ms: int):
-    global resultados_mano
+  
     resultados_mano = result # Guardamos el resultado completo aquí para usarlo después
     if result.hand_landmarks:
         print(f"¡Se detectaron {len(result.hand_landmarks)} manos!")
 
 def procesar_resultado_face(result, output_image, timestamp_ms: int):
-    global resultados_rostro
+
     resultados_rostro = result # Guardamos el resultado completo aquí para usarlo después
     if result.face_landmarks:
         print(f"¡Se detectaron {len(result.face_landmarks)} rostros!")
@@ -75,21 +75,31 @@ def dibujar_landmarks_rostro(frame, face_landmarks, alto, ancho):
         for indice, landmark in enumerate(face_landmark):
             x = int(landmark.x * ancho)
             y = int(landmark.y * alto)
-            cv2.circle(frame, (x, y), 2, (255, 0, 0), -1) # Dibuja un punto azul para cada punto de referencia del rostro
+            if indice in [0, 1, 234, 454, 152]:  # Ejemplo de índices de puntos de referencia del rostro
+                cv2.circle(frame, (x, y), 3, (0, 255, 0), -1) # Dibuja un punto verde para los puntos de referencia seleccionados
+            """ cv2.circle(frame, (x, y), 2, (255, 0, 0), -1) # Dibuja un punto azul para cada punto de referencia del rostro """
 
 options = HandLandmarkerOptions(
     base_options=BaseOptions(model_asset_path=str(MODEL_PATH)),
-    running_mode=RunningMode.LIVE_STREAM,
-    result_callback=procesar_resultado,
+    running_mode=RunningMode.IMAGE,
     num_hands=2
 )
 
 options_face = FaceLandmarkerOptions(
     base_options=BaseOptions(model_asset_path=str(FACE_MODEL_PATH)),
-    running_mode=RunningMode.LIVE_STREAM,
-    result_callback=procesar_resultado_face,
+    running_mode=RunningMode.IMAGE,
     num_faces=1
 )
+
+def extraer_datos_mano(resultados_mano):
+    datos_mano = []
+    if resultados_mano and resultados_mano.hand_landmarks:
+        for hand_landmark in resultados_mano.hand_landmarks:
+            mano = []
+            for landmark in hand_landmark:
+                mano.append((landmark.x, landmark.y, landmark.z))
+            datos_mano.append(mano)
+    return datos_mano
 
 with HandLandmarker.create_from_options(options) as landmarker, FaceLandmarker.create_from_options(options_face) as face_landmarker:
     while True:
@@ -103,8 +113,8 @@ with HandLandmarker.create_from_options(options) as landmarker, FaceLandmarker.c
 
         rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB) # == Cambio de BGR a RGB ==
         mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb_frame)
-        landmarker.detect_async(mp_image, int(time.time() * 1000))
-        face_landmarker.detect_async(mp_image, int(time.time() * 1000))
+        #landmarker.detect_async(mp_image, int(time.time() * 1000))
+        #face_landmarker.detect_async(mp_image, int(time.time() * 1000))
         
         # Dibujo de los landmarks del rostro si se detectan
         if resultados_rostro and resultados_rostro.face_landmarks:
@@ -115,7 +125,8 @@ with HandLandmarker.create_from_options(options) as landmarker, FaceLandmarker.c
             alto, ancho, _ = frame.shape
             # Llamamos a la función matemática que creaste
             dibujar_landmarks(frame, resultados_mano.hand_landmarks, alto, ancho)
-            
+        datos_mano = extraer_datos_mano(resultados_mano)  # Llamada a la función para extraer datos de la mano
+        
         cv2.imshow("Traductor de lenguaje de señas", frame)
 
         if cv2.waitKey(1) & 0xFF == ord("q"):
