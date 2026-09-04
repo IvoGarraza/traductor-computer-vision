@@ -1,0 +1,14 @@
+# Carpetas de configuración del editor (como el .idea que causó el aviso)
+.idea/
+.vscode/
+
+# Dependencias (si usas Node.js, Python, etc.)
+node_modules/
+venv/
+.venv/
+__pycache__/
+
+# Archivos del sistema y logs
+*.log
+.DS_Store
+Thumbs.db
