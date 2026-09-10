@@ -1,6 +1,7 @@
 # Carpetas de configuración del editor (como el .idea que causó el aviso)
 .idea/
 .vscode/
+.env
 
 # Dependencias (si usas Node.js, Python, etc.)
 node_modules/

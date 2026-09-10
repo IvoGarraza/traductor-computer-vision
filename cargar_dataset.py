@@ -26,6 +26,6 @@ for letra in carpetas_letras:
         array_y.append(letra)
 X = np.array(array_x)
 Y = np.array(array_y)
-print(X.shape)  # esperás (n_muestras_totales, 30, 147)
-print(Y.shape)  # esperás (n_muestras_totales,)
-print(Y[:5])    # mirá que las etiquetas sean texto, tipo ['a', 'a', 'a', 'a', 'a']
+#print(X.shape)  # esperás (n_muestras_totales, 30, 147)
+#print(Y.shape)  # esperás (n_muestras_totales,)
+#print(Y[:5])    # mirá que las etiquetas sean texto, tipo ['a', 'a', 'a', 'a', 'a']
