@@ -47,7 +47,7 @@ if not FACE_MODEL_PATH.exists():
     raise FileNotFoundError(f"No se encontró el modelo de rostro en: {FACE_MODEL_PATH}")
 
 # Definir la camara de video
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 
 
 #==== Configuracon de variables de MediaPipe========

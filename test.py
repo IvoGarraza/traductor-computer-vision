@@ -6,13 +6,13 @@ import os
 
 # Ruta del archivo .npy
 SCRIPT_DIR = Path(__file__).resolve().parent
-FILE_PATH = SCRIPT_DIR / "dataset" / "b" / "3"
+FILE_PATH = SCRIPT_DIR / "dataset" / "c" / "3"
 
 #cantidad_carpetas = Path.iterdir(SCRIPT_DIR / "dataset" / "a" )
 #cantidad_carpetas = len(os.listdir(FILE_PATH))
 carpeta = 0
 for carpeta in range(100):
-    direccion_carpeta = SCRIPT_DIR / "dataset" / "b" / str(carpeta)
+    direccion_carpeta = SCRIPT_DIR / "dataset" / "c" / str(carpeta)
     cantidad_carpetas = len(os.listdir(direccion_carpeta))
     if cantidad_carpetas == 30:
         print("Analizando carpeta:", carpeta)

@@ -1,0 +1,6 @@
+mediapipe==1.0.0
+numpy==2.2.6
+opencv-python==5.0.0.93
+scikit-learn==1.7.2
+tensorflow==2.21.0
+pyttsx3==2.99
