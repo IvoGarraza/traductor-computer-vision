@@ -47,7 +47,7 @@ if not FACE_MODEL_PATH.exists():
     raise FileNotFoundError(f"No se encontró el modelo de rostro en: {FACE_MODEL_PATH}")
 
 # Definir la camara de video
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 
 
 #==== Configuracon de variables de MediaPipe========
@@ -64,7 +64,7 @@ FaceLandmarkerResult = mp.tasks.vision.FaceLandmarkerResult
 #Función para dibujar los puntos de las manos
 def dibujar_landmarks(frame, hand_landmarks, alto, ancho):
     for hand_landmark in hand_landmarks:
-        print(hand_landmark)
+        #print(hand_landmark)
         for indice, landmark in enumerate(hand_landmark):
             # 'indice' valdrá 0, 1, 2, 3... 
             # 'landmark' contendrá las coordenadas correspondientes
@@ -187,8 +187,7 @@ with HandLandmarker.create_from_options(options) as landmarker, FaceLandmarker.c
     while True:
         ret, frame = cap.read()
         alto, ancho, _ = frame.shape #obtenemos la altura y ancho del frame
-        print(f"Resolución del frame: {ancho}x{alto}")
-        
+        #print(f"Resolución del frame: {ancho}x{alto}")
         if not ret:
             print("No se pudo acceder a la cámara.")
             break
@@ -214,10 +213,10 @@ with HandLandmarker.create_from_options(options) as landmarker, FaceLandmarker.c
         datos_rostro = extraer_datos_rostro(resultados_rostro)  # Llamada a la función para extraer datos del rostro
         #Distancia de manos y rostro
         distancia_mano_rostro = normalizar_manos_rostro(datos_mano_crudo,datos_rostro)
-        print('Distancia mano cara:', distancia_mano_rostro)
+        #print('Distancia mano cara:', distancia_mano_rostro)
         #Vector final con los datos de las manos y los rostros normalizados
         vector_final = constructor_de_vectores(datos_mano_normalizada, datos_rostro, distancia_mano_rostro)  # Llamada a la función para construir el vector final
-        print(vector_final.shape)
+        #print(vector_final.shape)
         #cv2.putText(frame,estado, ubicacion, fuente, escala, color,grosor) #muestra de texto en pantalla
         #cv2.putText(frame, 'secuencia:' + str(secuencia_actual), (50,80), fuente, escala, color, grosor)
         #cv2.putText(frame, "frames:" + str(frame_actual), (50,110), fuente, escala, color, grosor)

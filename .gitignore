@@ -2,6 +2,8 @@
 .idea/
 .vscode/
 .env
+dataset/
+dataset.zip
 
 # Dependencias (si usas Node.js, Python, etc.)
 node_modules/
@@ -13,3 +15,5 @@ __pycache__/
 *.log
 .DS_Store
 Thumbs.db
+clases.npy
+modelo_entrenado.keras

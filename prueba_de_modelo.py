@@ -31,13 +31,18 @@ clases = np.load(SCRIPT_DIR / 'clases.npy')
 # Variables de la máquina de estados e inferencia
 buffer = deque(maxlen=SECUENCIAS_LENGTH)
 
+# Variables para almacenar predicciones y letras acumuladas
+prediccion_actual = ""
+texto_acumulado = ""
+
+
 # Variables para texto en pantalla
 fuente = cv2.FONT_HERSHEY_SIMPLEX
 escala = 0.8
-grosor = 4
+grosor = 21
 
 # Definir la cámara de video
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 
 # ==== Configuración de variables de MediaPipe ========
 BaseOptions = mp.tasks.BaseOptions
@@ -217,12 +222,41 @@ with HandLandmarker.create_from_options(options) as landmarker, FaceLandmarker.c
             predicciones = modelo.predict(input_data, verbose=0)
             indice_max = np.argmax(predicciones[0])
             prediccion_actual = str(clases[indice_max])
-            # 3. Mostrar predicción en pantalla
-            cv2.putText(frame, f"Prediccion: {prediccion_actual}", (20, 80), fuente, 1.0, (0, 255, 0), grosor + 1) 
+            
+
+        # UI: Dibujar la predicción actual y el string acumulado en el frame
+        cv2.putText(frame, f"Prediccion: {prediccion_actual}", (10, 30), fuente, escala, (255, 0, 0), grosor)
+        cv2.putText(frame, f"Palabra: {texto_acumulado}", (10, 70), fuente, escala, (0, 255, 0), grosor)
+
 
         # Captura de teclado
         tecla = cv2.waitKey(1) & 0xFF
 
+        #Almacenamiento de la predicción actual en un archivo de texto
+        if tecla == 32:  # Tecla Espacio
+            if prediccion_actual:
+                texto_acumulado += prediccion_actual
+                print(f"Letra agregada. Texto actual: {texto_acumulado}")
+
+        # Reproducir la predicción actual en voz alta
+        if tecla == 13:  # Tecla Enter
+            lectura_letras(texto_acumulado)
+            
+        # Agregar un espacio al texto acumulado
+        if tecla == 9:  # Tecla Tab
+            texto_acumulado += " "
+            print(f"Espacio agregado. Texto actual: {texto_acumulado}")
+            
+        # Borrar el texto acumulado
+        if tecla == 8:  # Tecla Backspace
+            texto_acumulado = ""
+            print("Texto acumulado borrado.")
+        
+        # Borrar una letra del texto acumulado
+        if tecla == 15:  # Shift out
+            texto_acumulado = texto_acumulado[:-1]
+            print(f"Última letra borrada. Texto actual: {texto_acumulado}")
+            
 
         cv2.imshow("Traductor de lenguaje de senas", frame)
 

@@ -7,4 +7,4 @@ def speak(text):
     engine.runAndWait()
     
 
-speak("Hola, estoy usando python para convertir texto a voz")
+speak("Hola, mutti trolo y gey")
