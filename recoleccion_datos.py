@@ -64,7 +64,7 @@ FaceLandmarkerResult = mp.tasks.vision.FaceLandmarkerResult
 #Función para dibujar los puntos de las manos
 def dibujar_landmarks(frame, hand_landmarks, alto, ancho):
     for hand_landmark in hand_landmarks:
-        print(hand_landmark)
+        #print(hand_landmark)
         for indice, landmark in enumerate(hand_landmark):
             # 'indice' valdrá 0, 1, 2, 3... 
             # 'landmark' contendrá las coordenadas correspondientes
@@ -214,10 +214,10 @@ with HandLandmarker.create_from_options(options) as landmarker, FaceLandmarker.c
         datos_rostro = extraer_datos_rostro(resultados_rostro)  # Llamada a la función para extraer datos del rostro
         #Distancia de manos y rostro
         distancia_mano_rostro = normalizar_manos_rostro(datos_mano_crudo,datos_rostro)
-        print('Distancia mano cara:', distancia_mano_rostro)
+        #print('Distancia mano cara:', distancia_mano_rostro)
         #Vector final con los datos de las manos y los rostros normalizados
         vector_final = constructor_de_vectores(datos_mano_normalizada, datos_rostro, distancia_mano_rostro)  # Llamada a la función para construir el vector final
-        print(vector_final.shape)
+        #print(vector_final.shape)
         #cv2.putText(frame,estado, ubicacion, fuente, escala, color,grosor) #muestra de texto en pantalla
         #cv2.putText(frame, 'secuencia:' + str(secuencia_actual), (50,80), fuente, escala, color, grosor)
         #cv2.putText(frame, "frames:" + str(frame_actual), (50,110), fuente, escala, color, grosor)
@@ -245,17 +245,21 @@ with HandLandmarker.create_from_options(options) as landmarker, FaceLandmarker.c
         #Para grabar la letra CH hay que hardcodearla
         # --- 4. LÓGICA DE TRANSICIÓN DE ESTADOS ---
         if estado == 'inicio':
-            # 255 es lo que devuelve waitKey cuando NO se presiona nada
             if tecla != 255:
-                LETRA = chr(tecla)  # Convertimos el código ASCII a su letra (ej: 'a', 'b')
+                caracter = chr(tecla)
+                
+                # Validamos que la tecla sea estrictamente una letra o número
+                if caracter.isalnum():
+                    LETRA = caracter.lower()  # Guarda en minúscula para uniformidad
 
-                # AHORA creamos las carpetas, porque ya sabemos qué letra es
-                LETRA_DIR = DATASET_DIR / LETRA
-                LETRA_DIR.mkdir(parents=True, exist_ok=True)
-                for secuencia in range(N_SECUENCIAS):
-                    secuencia_dir = LETRA_DIR / str(secuencia)
-                    secuencia_dir.mkdir(parents=True, exist_ok=True)
-                estado = 'esperando'  # Pasamos al siguiente estado
+                    # Creación de carpetas solo si es un carácter válido
+                    LETRA_DIR = DATASET_DIR / LETRA
+                    LETRA_DIR.mkdir(parents=True, exist_ok=True)
+                    for secuencia in range(N_SECUENCIAS):
+                        secuencia_dir = LETRA_DIR / str(secuencia)
+                        secuencia_dir.mkdir(parents=True, exist_ok=True)
+                    
+                    estado = 'esperando'  # Pasamos al siguiente estado
 
         elif estado == 'esperando':
             color = (0, 144, 255)

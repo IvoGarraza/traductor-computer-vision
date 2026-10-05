@@ -5,7 +5,7 @@ import numpy as np
 from pathlib import Path
 import tensorflow as tf
 from collections import deque
-import pyttsx3
+#import pyttsx3
 
 # ==== Configuración inicial ======
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -51,22 +51,24 @@ FaceLandmarkerOptions = mp.tasks.vision.FaceLandmarkerOptions
 
 # Opciones para configurar MediaPipe
 options = HandLandmarkerOptions(
-    base_options=BaseOptions(model_asset_path=str(MODEL_PATH)),
+    base_options=BaseOptions(model_asset_path=str(MODEL_PATH),
+                             delegate=BaseOptions.Delegate.GPU),
     running_mode=RunningMode.IMAGE,
     num_hands=2
 )
 
 options_face = FaceLandmarkerOptions(
-    base_options=BaseOptions(model_asset_path=str(FACE_MODEL_PATH)),
+    base_options=BaseOptions(model_asset_path=str(FACE_MODEL_PATH),
+                             delegate=BaseOptions.Delegate.GPU),
     running_mode=RunningMode.IMAGE,
     num_faces=1
 )
 
 #configuraccion de pyttsx3
-engine = pyttsx3.init()
-def lectura_letras(conjunto_letras):
-    engine.say(conjunto_letras)
-    engine.runAndWait()
+#engine = pyttsx3.init()
+#def lectura_letras(conjunto_letras):
+#    engine.say(conjunto_letras)
+#    engine.runAndWait()
 
 # Funcióes de dibujo y extracción de landmarks
 def dibujar_landmarks(frame, hand_landmarks, alto, ancho):
@@ -214,9 +216,18 @@ with HandLandmarker.create_from_options(options) as landmarker, FaceLandmarker.c
             input_data = np.expand_dims(secuencia_array, axis=0)
 
             # 2. Predecir
-            predicciones = modelo.predict(input_data, verbose=0)
+            # predicciones = modelo.predict(input_data, verbose=0)
+            # indice_max = np.argmax(predicciones[0])
+            # prediccion_actual = str(clases[indice_max])
+
+            # 2. Predecir (Reemplazar modelo.predict)
+            # El uso de training=False es mucho más rápido para inferencia cuadro a cuadro
+            predicciones_tensor = modelo(input_data, training=False) 
+            predicciones = predicciones_tensor.numpy() # Convertir el tensor a un array de numpy
+            
             indice_max = np.argmax(predicciones[0])
             prediccion_actual = str(clases[indice_max])
+            
             # 3. Mostrar predicción en pantalla
             cv2.putText(frame, f"Prediccion: {prediccion_actual}", (20, 80), fuente, 1.0, (0, 255, 0), grosor + 1) 
 
